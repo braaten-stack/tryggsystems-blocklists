@@ -25,6 +25,16 @@ Each part's address is `https://raw.githubusercontent.com/braaten-stack/tryggsys
 
 A gateway runs one tier, with every one of its parts. Running two tiers on one gateway would count the same domains twice.
 
+## IPv6
+
+| List | File | Type | Used |
+|---|---|---|---|
+| Encrypted DNS Bypass, IPv6 | `doh-ipv6.txt` | IP | Sites whose segments run IPv6 |
+
+Hagezi publishes its IP lists for IPv4 only. This list is built from [dibdot's DoH-IP-blocklists](https://github.com/dibdot/DoH-IP-blocklists), which looks up the IPv6 addresses of public encrypted DNS servers. That list also includes shared hosting and CDN addresses, such as Cloudflare's, which serve ordinary websites too, so blocking them would block those sites. So an address is kept only when its server's IPv4 address is on Hagezi's curated IPv4 list, which leaves the shared addresses out. As a second check, any address in Cloudflare's shared CDN range is dropped, apart from its DNS resolver range.
+
+There is no IPv6 version of the Threat Intelligence Feeds IP list.
+
 ## Lists taken straight from Hagezi
 
 These go alongside the tier. Each address is `https://raw.githubusercontent.com/hagezi/dns-blocklists/main/<path>`.
@@ -39,13 +49,13 @@ These go alongside the tier. Each address is `https://raw.githubusercontent.com/
 | URL Shortener | `wildcard/urlshortener.txt` | Domain | When a client asks |
 | Encrypted DNS/VPN/Tor/Proxy Bypass | `wildcard/doh-vpn-proxy-bypass.txt` | Domain | When a client asks |
 
-**The Encrypted DNS Bypass IPv4 list includes Cloudflare's and Quad9's DNS addresses** (`1.1.1.1`, `1.0.0.1`, `9.9.9.9`, `149.112.112.112`), which the gateway uses for its own lookups. Apply it to client zones only, never to traffic from the gateway itself.
+**The Encrypted DNS Bypass IP lists include Cloudflare's and Quad9's DNS addresses** (such as `1.1.1.1`, `9.9.9.9` and `2606:4700:4700::1111`), which the gateway uses for its own lookups. Apply them to client zones only, never to traffic from the gateway itself.
 
 ## Staying under the 500,000-entry limit
 
 [`manifest.json`](https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/manifest.json) on the `lists` branch shows, for every tier:
 - its entry count,
-- its count with the two IP lists added,
+- its count with the IP lists added (TIF IPv4, Encrypted DNS Bypass IPv4 and IPv6),
 - the room left under UniFi's limit.
 
 It also shows the current size of each recommended list. Check the room left before adding any list from Hagezi to a gateway.
@@ -59,9 +69,10 @@ It also shows the current size of each recommended list. Check the room left bef
   - a download doesn't match the entry count in Hagezi's own header;
   - a tier shrinks by more than half since the last build;
   - a tier outgrows its parts, which means raising its part count in `build.py` and adding the new part on every gateway using it;
-  - a tier plus the IP lists passes 450,000 entries.
+  - a tier plus the IP lists passes 450,000 entries;
+  - the IPv6 encrypted DNS list falls below 200 addresses, or shrinks by more than half.
 - When a tier (other than Strict) plus NSFW and Gambling Medium would pass UniFi's limit, the run shows a warning.
 
 ## License
 
-The lists are Hagezi's work, released under the GNU General Public License v3.0. The merged lists published here are released under the same license ([LICENSE](LICENSE)). Each part names the Hagezi lists and versions it was built from, and that Trygg Systems merged them.
+The lists are the work of Hagezi and, for the IPv6 list, dibdot (Dirk Brenken), both released under the GNU General Public License v3.0. The merged lists published here are released under the same license ([LICENSE](LICENSE)). Each part names the Hagezi lists and versions it was built from, and that Trygg Systems merged them.

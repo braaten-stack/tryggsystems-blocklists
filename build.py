@@ -14,6 +14,7 @@ every part keeps getting the whole tier. If anything looks wrong, the build
 stops and the previously published lists stay in place.
 """
 
+import ipaddress
 import json
 import math
 import re
@@ -48,6 +49,17 @@ DOMAIN_SOURCES = {
 # manifest can show how much room each tier leaves under UniFi's limit.
 IP_LISTS = {"tif-ips": "ips/tif.txt", "doh-ips": "ips/doh.txt"}
 RECOMMENDED_ADDONS = {"nsfw": "wildcard/nsfw.txt", "gambling-medium": "wildcard/gambling.medium.txt"}
+
+# IPv6 addresses of encrypted DNS servers. Hagezi publishes its list for IPv4
+# only. dibdot's DoH-IP-blocklists resolves public DoH servers to IPv6, but
+# includes shared hosting and CDN addresses that also serve ordinary websites.
+# So an IPv6 address is kept only when its server's IPv4 address is on Hagezi's
+# curated list, which leaves those shared addresses out.
+DIBDOT_BASE = "https://raw.githubusercontent.com/dibdot/DoH-IP-blocklists/master/"
+DOH_IPV6_MINIMUM = 200
+# Cloudflare's shared CDN range. Its DNS resolver range is the one exception.
+SHARED_IPV6 = [ipaddress.ip_network("2606:4700::/32")]
+SHARED_IPV6_EXCEPTIONS = [ipaddress.ip_network("2606:4700:4700::/48")]
 
 # (tier name, source lists, number of parts)
 TIERS = [
@@ -146,10 +158,51 @@ def merge(domain_sets):
     return kept
 
 
+def parse_annotated(text):
+    """dibdot's lists: one address per line, then '# domain, domain'."""
+    servers = {}
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        address, _, names = line.partition("#")
+        servers[address.strip()] = {n.strip() for n in names.split(",") if n.strip()}
+    return servers
+
+
+def is_shared(address):
+    ip = ipaddress.ip_address(address)
+    if any(ip in net for net in SHARED_IPV6_EXCEPTIONS):
+        return False
+    return any(ip in net for net in SHARED_IPV6)
+
+
+def build_doh_ipv6(problems):
+    print("doh-ipv6: building from dibdot and Hagezi", flush=True)
+    _, hagezi = parse(fetch(SOURCE_BASE + IP_LISTS["doh-ips"]))
+    hagezi = set(hagezi)
+    ipv4 = parse_annotated(fetch(DIBDOT_BASE + "doh-ipv4.txt"))
+    ipv6 = parse_annotated(fetch(DIBDOT_BASE + "doh-ipv6.txt"))
+    trusted = set()
+    for address, names in ipv4.items():
+        if address in hagezi:
+            trusted |= names
+    kept = sorted(
+        (a for a, names in ipv6.items() if names & trusted and not is_shared(a)),
+        key=ipaddress.ip_address,
+    )
+    if len(kept) < DOH_IPV6_MINIMUM:
+        problems.append(f"doh-ipv6: only {len(kept)} addresses")
+    return kept
+
+
 def previous_counts():
     try:
         manifest = json.loads(fetch(PUBLISHED_BASE + "manifest.json", attempts=1))
-        return {name: info["entries"] for name, info in manifest["tiers"].items()}
+        counts = {name: info["entries"] for name, info in manifest["tiers"].items()}
+        for name, info in manifest.get("ipv6_lists", {}).items():
+            counts[name] = info["entries"]
+        return counts
     except Exception:  # noqa: BLE001 - first build of this layout
         return {}
 
@@ -163,7 +216,8 @@ def main(out_dir):
     sources = {name: load_domain_list(name, path, problems) for name, path in DOMAIN_SOURCES.items()}
     ip_counts = {name: count_list(path, problems, 500) for name, path in IP_LISTS.items()}
     addon_counts = {name: count_list(path, problems, 1000) for name, path in RECOMMENDED_ADDONS.items()}
-    ip_total = sum(ip_counts.values())
+    doh_ipv6 = build_doh_ipv6(problems)
+    ip_total = sum(ip_counts.values()) + len(doh_ipv6)
     addon_total = sum(addon_counts.values())
     previous = previous_counts()
 
@@ -177,6 +231,22 @@ def main(out_dir):
         "tiers": {},
     }
     outputs = {}
+
+    if "doh-ipv6" in previous and len(doh_ipv6) < previous["doh-ipv6"] * (1 - MAX_DROP):
+        problems.append(f"doh-ipv6: {len(doh_ipv6)} addresses, down from {previous['doh-ipv6']}")
+    outputs["doh-ipv6.txt"] = "\n".join([
+        "# Title: Trygg Systems Encrypted DNS Bypass, IPv6",
+        "# Description: IPv6 addresses of public encrypted DNS servers, kept only for servers whose IPv4",
+        "#   addresses are on Hagezi's Encrypted DNS Bypass IPv4 list, so shared hosting and CDN addresses stay out",
+        f"# Sources: {DIBDOT_BASE}doh-ipv6.txt, {DIBDOT_BASE}doh-ipv4.txt, {SOURCE_BASE}{IP_LISTS['doh-ips']}",
+        f"# License: GPL-3.0, see {LICENSE_URL}",
+        f"# Built: {built}",
+        f"# Entries: {len(doh_ipv6)}",
+        "#",
+    ] + doh_ipv6) + "\n"
+    manifest["ipv6_lists"] = {
+        "doh-ipv6": {"url": PUBLISHED_BASE + "doh-ipv6.txt", "entries": len(doh_ipv6)},
+    }
 
     for tier, members, parts in TIERS:
         entries = merge([sources[m]["domains"] for m in members])
