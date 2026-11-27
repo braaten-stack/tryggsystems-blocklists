@@ -35,6 +35,8 @@ Hagezi publishes its IP lists for IPv4 only. This list is built from [dibdot's D
 
 There is no IPv6 version of the Threat Intelligence Feeds IP list.
 
+Spamhaus's DROPv6 is the closest IPv6 threat list found so far. Spamhaus publishes it only as JSON, not as a plain list, and its terms don't give permission to republish a converted copy, so it isn't used yet.
+
 ## Lists taken straight from Hagezi
 
 These go alongside the tier. Each address is `https://raw.githubusercontent.com/hagezi/dns-blocklists/main/<path>`.
