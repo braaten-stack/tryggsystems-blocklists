@@ -1,0 +1,242 @@
+{
+  "built": "2026-11-27 01:49 UTC",
+  "unifi_limit": 500000,
+  "ip_lists": {
+    "tif-ips": {
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/ips/tif.txt",
+      "entries": 35336
+    },
+    "doh-ips": {
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/ips/doh.txt",
+      "entries": 1471
+    }
+  },
+  "recommended_addons": {
+    "nsfw": {
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/nsfw.txt",
+      "entries": 80861
+    },
+    "gambling-medium": {
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/gambling.medium.txt",
+      "entries": 72273
+    }
+  },
+  "tiers": {
+    "low-power": {
+      "sources": [
+        "light",
+        "tif-mini",
+        "dyndns",
+        "doh"
+      ],
+      "entries": 250846,
+      "entries_with_ip_lists": 288501,
+      "room_under_unifi_limit": 211499,
+      "parts": [
+        {
+          "file": "low-power-1.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/low-power-1.txt",
+          "entries": 83616
+        },
+        {
+          "file": "low-power-2.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/low-power-2.txt",
+          "entries": 83616
+        },
+        {
+          "file": "low-power-3.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/low-power-3.txt",
+          "entries": 83614
+        }
+      ]
+    },
+    "low-power-tlds": {
+      "sources": [
+        "light",
+        "tif-mini",
+        "dyndns",
+        "doh",
+        "spam-tlds"
+      ],
+      "entries": 202141,
+      "entries_with_ip_lists": 239796,
+      "room_under_unifi_limit": 260204,
+      "parts": [
+        {
+          "file": "low-power-tlds-1.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/low-power-tlds-1.txt",
+          "entries": 67381
+        },
+        {
+          "file": "low-power-tlds-2.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/low-power-tlds-2.txt",
+          "entries": 67381
+        },
+        {
+          "file": "low-power-tlds-3.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/low-power-tlds-3.txt",
+          "entries": 67379
+        }
+      ]
+    },
+    "standard": {
+      "sources": [
+        "normal",
+        "tif-mini",
+        "dyndns",
+        "doh"
+      ],
+      "entries": 312746,
+      "entries_with_ip_lists": 350401,
+      "room_under_unifi_limit": 149599,
+      "parts": [
+        {
+          "file": "standard-1.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-1.txt",
+          "entries": 78187
+        },
+        {
+          "file": "standard-2.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-2.txt",
+          "entries": 78187
+        },
+        {
+          "file": "standard-3.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-3.txt",
+          "entries": 78187
+        },
+        {
+          "file": "standard-4.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-4.txt",
+          "entries": 78185
+        }
+      ]
+    },
+    "standard-tlds": {
+      "sources": [
+        "normal",
+        "tif-mini",
+        "dyndns",
+        "doh",
+        "spam-tlds"
+      ],
+      "entries": 253688,
+      "entries_with_ip_lists": 291343,
+      "room_under_unifi_limit": 208657,
+      "parts": [
+        {
+          "file": "standard-tlds-1.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-tlds-1.txt",
+          "entries": 84563
+        },
+        {
+          "file": "standard-tlds-2.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-tlds-2.txt",
+          "entries": 84563
+        },
+        {
+          "file": "standard-tlds-3.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/standard-tlds-3.txt",
+          "entries": 84562
+        }
+      ]
+    },
+    "strict": {
+      "sources": [
+        "pro-plus",
+        "tif-medium",
+        "dyndns",
+        "doh",
+        "spam-tlds",
+        "hoster"
+      ],
+      "entries": 369702,
+      "entries_with_ip_lists": 407357,
+      "room_under_unifi_limit": 92643,
+      "parts": [
+        {
+          "file": "strict-1.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/strict-1.txt",
+          "entries": 92426
+        },
+        {
+          "file": "strict-2.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/strict-2.txt",
+          "entries": 92426
+        },
+        {
+          "file": "strict-3.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/strict-3.txt",
+          "entries": 92426
+        },
+        {
+          "file": "strict-4.txt",
+          "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/strict-4.txt",
+          "entries": 92424
+        }
+      ]
+    }
+  },
+  "ipv6_lists": {
+    "doh-ipv6": {
+      "url": "https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/doh-ipv6.txt",
+      "entries": 848
+    }
+  },
+  "sources": {
+    "light": {
+      "title": "HaGeZi's Multi LIGHT - basic protection",
+      "version": "2026.1126.2324.28",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/light.txt",
+      "entries": 81810
+    },
+    "normal": {
+      "title": "HaGeZi's Multi NORMAL - all-round protection",
+      "version": "2026.1126.2321.57",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt",
+      "entries": 184355
+    },
+    "pro-plus": {
+      "title": "HaGeZi's Multi PRO++ - advanced protection (more aggressive)",
+      "version": "2026.1126.2334.40",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.plus.txt",
+      "entries": 258276
+    },
+    "tif-mini": {
+      "title": "HaGeZi's Threat Intelligence Feeds - mini version (best for browser/mobile ad blockers)",
+      "version": "2026.1126.2309.44",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.mini.txt",
+      "entries": 169540
+    },
+    "tif-medium": {
+      "title": "HaGeZi's Threat Intelligence Feeds - medium version (best for browser/mobile ad blockers)",
+      "version": "2026.1126.2306.42",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.medium.txt",
+      "entries": 268899
+    },
+    "dyndns": {
+      "title": "HaGeZi's DynDNS - guards against dynamic DNS abuse!",
+      "version": "2026.1126.2352.55",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/dyndns.txt",
+      "entries": 1941
+    },
+    "doh": {
+      "title": "HaGeZi's Encrypted DNS Bypass - stop people from sneaking around your DNS!",
+      "version": "2026.1126.2353.23",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/doh.txt",
+      "entries": 3587
+    },
+    "spam-tlds": {
+      "title": "HaGeZi's The World's Most Abused TLDs - Aggressive",
+      "version": "2026.1124.1530.06",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/spam-tlds.txt",
+      "entries": 445
+    },
+    "hoster": {
+      "title": "HaGeZi's Badware Hoster - guards against malicious hosting services!",
+      "version": "2026.1126.2313.37",
+      "url": "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/hoster.txt",
+      "entries": 1394
+    }
+  }
+}
