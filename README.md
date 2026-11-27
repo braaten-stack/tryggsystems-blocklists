@@ -51,11 +51,21 @@ These go alongside the tier. Each address is `https://raw.githubusercontent.com/
 
 **The Encrypted DNS Bypass IP lists include Cloudflare's and Quad9's DNS addresses** (such as `1.1.1.1`, `9.9.9.9` and `2606:4700:4700::1111`), which the gateway uses for its own lookups. Apply them to client zones only, never to traffic from the gateway itself.
 
+## Spamhaus DROP
+
+| List | Address | Type | Used |
+|---|---|---|---|
+| Spamhaus DROP | `https://www.spamhaus.org/drop/drop.txt` | IP | Every site |
+
+DROP lists whole address ranges run by criminals, which Spamhaus advises dropping all traffic to and from. Hagezi's Threat Intelligence Feeds IP list holds single addresses, so the two barely overlap.
+
+Gateways load DROP straight from Spamhaus. Its terms don't give permission to republish it, so this repository never copies it. The build only counts its entries, so the room left under UniFi's limit includes it.
+
 ## Staying under the 500,000-entry limit
 
 [`manifest.json`](https://raw.githubusercontent.com/braaten-stack/tryggsystems-blocklists/lists/manifest.json) on the `lists` branch shows, for every tier:
 - its entry count,
-- its count with the IP lists added (TIF IPv4, Encrypted DNS Bypass IPv4 and IPv6),
+- its count with the IP lists added (TIF IPv4, Spamhaus DROP, Encrypted DNS Bypass IPv4 and IPv6),
 - the room left under UniFi's limit.
 
 It also shows the current size of each recommended list. Check the room left before adding any list from Hagezi to a gateway.

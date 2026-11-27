@@ -48,6 +48,11 @@ DOMAIN_SOURCES = {
 # Lists gateways pull straight from Hagezi. They're counted here so the
 # manifest can show how much room each tier leaves under UniFi's limit.
 IP_LISTS = {"tif-ips": "ips/tif.txt", "doh-ips": "ips/doh.txt"}
+
+# Spamhaus DROP is loaded by gateways straight from Spamhaus. Its terms give no
+# permission to republish it, so the build only counts it, for the room checks.
+SPAMHAUS_DROP_URL = "https://www.spamhaus.org/drop/drop.txt"
+SPAMHAUS_DROP_ALLOWANCE = 2000  # used only if it has never been counted
 RECOMMENDED_ADDONS = {"nsfw": "wildcard/nsfw.txt", "gambling-medium": "wildcard/gambling.medium.txt"}
 
 # IPv6 addresses of encrypted DNS servers. Hagezi publishes its list for IPv4
@@ -196,10 +201,25 @@ def build_doh_ipv6(problems):
     return kept
 
 
+def count_spamhaus_drop(previous, warnings):
+    try:
+        lines = [line.split(";")[0].strip() for line in fetch(SPAMHAUS_DROP_URL).splitlines()]
+        entries = [line for line in lines if line]
+        if len(entries) < 200:
+            raise ValueError(f"only {len(entries)} entries")
+        return len(entries)
+    except Exception as error:  # noqa: BLE001 - keep building with the last known count
+        fallback = previous.get("spamhaus-drop", SPAMHAUS_DROP_ALLOWANCE)
+        warnings.append(f"spamhaus-drop: couldn't be counted ({error}); using {fallback}")
+        return fallback
+
+
 def previous_counts():
     try:
         manifest = json.loads(fetch(PUBLISHED_BASE + "manifest.json", attempts=1))
         counts = {name: info["entries"] for name, info in manifest["tiers"].items()}
+        for name, info in manifest.get("ip_lists", {}).items():
+            counts[name] = info["entries"]
         for name, info in manifest.get("ipv6_lists", {}).items():
             counts[name] = info["entries"]
         return counts
@@ -214,17 +234,25 @@ def main(out_dir):
     problems, warnings = [], []
 
     sources = {name: load_domain_list(name, path, problems) for name, path in DOMAIN_SOURCES.items()}
+    previous = previous_counts()
     ip_counts = {name: count_list(path, problems, 500) for name, path in IP_LISTS.items()}
+    drop_count = count_spamhaus_drop(previous, warnings)
     addon_counts = {name: count_list(path, problems, 1000) for name, path in RECOMMENDED_ADDONS.items()}
     doh_ipv6 = build_doh_ipv6(problems)
-    ip_total = sum(ip_counts.values()) + len(doh_ipv6)
+    ip_total = sum(ip_counts.values()) + drop_count + len(doh_ipv6)
     addon_total = sum(addon_counts.values())
-    previous = previous_counts()
 
     manifest = {
         "built": built,
         "unifi_limit": UNIFI_LIMIT,
-        "ip_lists": {name: {"url": SOURCE_BASE + path, "entries": ip_counts[name]} for name, path in IP_LISTS.items()},
+        "ip_lists": {
+            **{name: {"url": SOURCE_BASE + path, "entries": ip_counts[name]} for name, path in IP_LISTS.items()},
+            "spamhaus-drop": {
+                "url": SPAMHAUS_DROP_URL,
+                "entries": drop_count,
+                "note": "Loaded straight from Spamhaus; counted here, not republished",
+            },
+        },
         "recommended_addons": {
             name: {"url": SOURCE_BASE + path, "entries": addon_counts[name]} for name, path in RECOMMENDED_ADDONS.items()
         },
